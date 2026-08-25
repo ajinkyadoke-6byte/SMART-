@@ -28,6 +28,7 @@ interface DashboardProps {
   lowAttendanceStudents?: LowAttendanceStudent[];
   onStartSession: (classId: string, subjectId: string, room: string, metadata?: any) => void;
   onGoToClasses: () => void;
+  onOpenHistory?: () => void;
 }
 
 const defaultDailyStats: DailyAttendanceStat[] = [
@@ -138,6 +139,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   lowAttendanceStudents = defaultLowAttendanceStudents,
   onStartSession,
   onGoToClasses,
+  onOpenHistory,
 }) => {
   const [hoveredDay, setHoveredDay] = useState<DailyAttendanceStat | null>(null);
 
@@ -433,23 +435,30 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   {/* Right block: If done -> attendance count block beside it. If not done -> start session button */}
                   <div className="shrink-0 flex items-center pl-1 sm:pl-0 pt-1 sm:pt-0">
                     {isDone ? (
-                      /* Block beside completed lecture for Attendance Count */
-                      <div className="w-full sm:w-auto bg-emerald-50/80 border border-emerald-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:px-4 sm:py-2.5 flex items-center space-x-2.5 sm:space-x-3">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                          <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        </div>
-                        <div>
-                          <div className="flex items-baseline space-x-1.5">
-                            <span className="text-xs sm:text-sm font-extrabold text-emerald-900 font-mono">
-                              {count ? `${count.present} / ${count.total}` : 'Completed'}
-                            </span>
-                            <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700">
-                              ({count ? `${count.percentage}%` : 'Done'})
+                      /* Block beside completed lecture for Attendance Count with View History trigger */
+                      <div className="w-full sm:w-auto flex items-center gap-2">
+                        <div
+                          onClick={() => onOpenHistory && onOpenHistory()}
+                          title="Click to view full attendance history and student list"
+                          className="flex-1 sm:flex-initial bg-emerald-50/80 hover:bg-emerald-100/80 transition-colors border border-emerald-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:px-4 sm:py-2.5 flex items-center space-x-2.5 sm:space-x-3 cursor-pointer group"
+                        >
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-100 text-emerald-700 group-hover:bg-emerald-200 flex items-center justify-center shrink-0 transition">
+                            <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </div>
+                          <div>
+                            <div className="flex items-baseline space-x-1.5">
+                              <span className="text-xs sm:text-sm font-extrabold text-emerald-900 font-mono">
+                                {count ? `${count.present} / ${count.total}` : 'Completed'}
+                              </span>
+                              <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700">
+                                ({count ? `${count.percentage}%` : 'Done'})
+                              </span>
+                            </div>
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-700 flex items-center gap-1 group-hover:underline">
+                              <span>Attendance Count</span>
+                              <span className="text-[9px] bg-emerald-200/60 text-emerald-800 px-1 py-0.2 rounded font-normal">View List →</span>
                             </span>
                           </div>
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-600 block">
-                            Attendance Count
-                          </span>
                         </div>
                       </div>
                     ) : (

@@ -177,6 +177,8 @@ export interface AttendanceSession {
   teacherId?: string;
   teacherName?: string;
   startedAt: string;
+  endedAt?: string;
+  date?: string;
   status?: 'active' | 'ended';
   qrCodeUrl: string;
   qrExpiresIn: number;

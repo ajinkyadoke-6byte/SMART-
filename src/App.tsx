@@ -13,6 +13,7 @@ import { ClassesManagement } from './components/ClassesManagement';
 import { LiveAttendanceDashboard } from './components/LiveAttendanceDashboard';
 import { ClassroomTabletMode } from './components/ClassroomTabletMode';
 import { PostSessionAttendanceReview } from './components/PostSessionAttendanceReview';
+import { PastAttendanceHistory } from './components/PastAttendanceHistory';
 import { StudentDashboard } from './components/StudentDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { OfflineSyncBanner } from './components/OfflineSyncBanner';
@@ -26,6 +27,7 @@ import {
   INITIAL_TIMETABLE,
   INITIAL_DAILY_ATTENDANCE,
   INITIAL_LOW_ATTENDANCE,
+  INITIAL_PAST_SESSIONS,
 } from './data/initialData';
 import {
   Teacher,
@@ -46,7 +48,7 @@ export default function App() {
   const [student, setStudent] = useState<any | null>(null);
   const [admin, setAdmin] = useState<any | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'classes' | 'session' | 'review' | 'tablet' | 'admin'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'classes' | 'history' | 'session' | 'review' | 'tablet' | 'admin'>('dashboard');
 
   const [classes, setClasses] = useState<ClassItem[]>(INITIAL_CLASSES);
   const [subjects, setSubjects] = useState<SubjectItem[]>(INITIAL_SUBJECTS);
@@ -58,6 +60,7 @@ export default function App() {
   const [lowAttendanceStudents, setLowAttendanceStudents] = useState<LowAttendanceStudent[]>(INITIAL_LOW_ATTENDANCE);
   const [activeSession, setActiveSession] = useState<AttendanceSession | null>(null);
   const [endedSessionForReview, setEndedSessionForReview] = useState<AttendanceSession | null>(null);
+  const [pastSessions, setPastSessions] = useState<AttendanceSession[]>(INITIAL_PAST_SESSIONS);
   const [isTabletModeOpen, setIsTabletModeOpen] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isStartingSession, setIsStartingSession] = useState(false);
@@ -87,6 +90,7 @@ export default function App() {
     socketClient.on('session:ended', (sessionData: AttendanceSession) => {
       setActiveSession(null);
       setEndedSessionForReview(sessionData);
+      setPastSessions((prev) => [sessionData, ...prev.filter((s) => s.id !== sessionData.id && s.sessionId !== sessionData.sessionId)]);
       setIsTabletModeOpen(false);
       if (teacher) {
         setActiveTab('review');
@@ -197,6 +201,15 @@ export default function App() {
           if (data.activeSession) {
             setActiveSession(data.activeSession);
           }
+        }
+      })
+      .catch(() => {});
+
+    // Initial fetch of past sessions history
+    safeFetchJson('/api/session/history')
+      .then(({ ok, data }) => {
+        if (ok && data && Array.isArray(data.sessions) && data.sessions.length > 0) {
+          setPastSessions(data.sessions);
         }
       })
       .catch(() => {});
@@ -495,6 +508,10 @@ export default function App() {
       };
 
       setEndedSessionForReview(updatedSessionObj);
+      setPastSessions((prev) => [
+        updatedSessionObj,
+        ...prev.filter((s) => s.id !== updatedSessionObj.id && s.sessionId !== updatedSessionObj.sessionId),
+      ]);
 
       setTimetable((prev) =>
         prev.map((t) => {
@@ -685,6 +702,7 @@ export default function App() {
             lowAttendanceStudents={lowAttendanceStudents}
             onStartSession={handleStartSession}
             onGoToClasses={() => setActiveTab('classes')}
+            onOpenHistory={() => setActiveTab('history')}
           />
         )}
 
@@ -701,6 +719,18 @@ export default function App() {
             onBranchesUpdated={(updated) => setBranches(updated)}
             isLoading={isStartingSession}
           />
+        )}
+
+        {teacher && activeTab === 'history' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+            <PastAttendanceHistory
+              pastSessions={pastSessions}
+              onOpenSessionReview={(session) => {
+                setEndedSessionForReview(session);
+                setActiveTab('review');
+              }}
+            />
+          </div>
         )}
 
         {teacher && activeTab === 'session' && (

@@ -104,6 +104,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                   Classes
                 </button>
                 <button
+                  onClick={() => setActiveTab('history')}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    activeTab === 'history'
+                      ? 'bg-slate-950 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Lecture History
+                </button>
+                <button
                   onClick={() => setActiveTab('session')}
                   className={`relative px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
                     activeTab === 'session'
@@ -250,6 +260,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 Classes
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap shrink-0 transition ${
+                  activeTab === 'history' ? 'bg-slate-950 text-white shadow-2xs' : 'text-slate-600'
+                }`}
+              >
+                History
               </button>
               <button
                 onClick={() => setActiveTab('session')}
