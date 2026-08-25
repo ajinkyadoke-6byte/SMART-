@@ -451,35 +451,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <span>Sign in / Access Portal</span>
             </button>
           </div>
-
-          {/* Quick Direct Access Row with Colored Dots */}
-          <div className="pt-4 flex items-center justify-center flex-wrap gap-3 text-xs text-slate-500 font-medium">
-            <span>Quick direct access:</span>
-            <button
-              id="quick-teacher-btn"
-              onClick={() => handleDirectAccess('teacher')}
-              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/80 hover:bg-white border border-slate-200/80 rounded-full text-slate-800 font-semibold shadow-2xs transition cursor-pointer hover:text-indigo-600"
-            >
-              <span className="w-2 h-2 rounded-full bg-indigo-600 inline-block" />
-              <span>Teacher Portal</span>
-            </button>
-            <button
-              id="quick-student-btn"
-              onClick={() => handleDirectAccess('student')}
-              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/80 hover:bg-white border border-slate-200/80 rounded-full text-slate-800 font-semibold shadow-2xs transition cursor-pointer hover:text-emerald-600"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block" />
-              <span>Student Portal</span>
-            </button>
-            <button
-              id="quick-admin-btn"
-              onClick={() => handleDirectAccess('admin')}
-              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/80 hover:bg-white border border-slate-200/80 rounded-full text-slate-800 font-semibold shadow-2xs transition cursor-pointer hover:text-slate-900"
-            >
-              <span className="w-2 h-2 rounded-full bg-slate-700 inline-block" />
-              <span>Admin Center</span>
-            </button>
-          </div>
         </main>
 
         {/* Discreet Footer */}
